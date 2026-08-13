@@ -4,13 +4,14 @@
   "description": "Cookie module for OstroJS",
   "main": "jar.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx c8 npx jest"
   },
   "dependencies": {
-    "@ostro/support": "^1.0.2",
     "@ostro/contracts": "^1.0.0",
+    "@ostro/support": "^1.0.2",
     "cookie": "^0.4.0",
     "cookie-signature": "^1.1.0",
+    "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2"
   },
   "engines": {

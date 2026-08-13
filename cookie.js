@@ -30,7 +30,8 @@ class Cookie {
     }
 
     set(key, value, options = {}) {
-        this[kResponse].append('Set-Cookie', this[kJar].createCookies(key, value, options, this[kRequest].secure()));
+        const isSecure = typeof this[kRequest]?.secure === 'function' ? this[kRequest].secure() : false;
+        this[kResponse].append('Set-Cookie', this[kJar].createCookies(key, value, options, isSecure));
         return this
     }
 

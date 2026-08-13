@@ -1,4 +1,3 @@
-require('@ostro/support/helpers')
 var signature = require('cookie-signature');
 var cookie = require('cookie');
 const JarContract = require('@ostro/contracts/cookie/jar')
