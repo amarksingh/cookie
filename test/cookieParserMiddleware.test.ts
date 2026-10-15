@@ -1,5 +1,5 @@
-const CookieParser = require('../middleware/cookieParser');
-const Jar = require('../jar');
+import CookieParser from '../middleware/cookieParser';
+import Jar from '../jar';
 
 describe('CookieParser Middleware Unit Tests', () => {
 

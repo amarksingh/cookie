@@ -1,4 +1,4 @@
-const Cookie = require('../cookie');
+import Cookie from '../cookie';
 
 describe('Cookie Class Comprehensive Unit Tests', () => {
 

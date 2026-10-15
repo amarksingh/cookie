@@ -1,5 +1,5 @@
-const CookieServiceProvider = require('../cookieServiceProvider');
-const Jar = require('../jar');
+import CookieServiceProvider from '../cookieServiceProvider';
+import Jar from '../jar';
 
 describe('CookieServiceProvider Unit Tests', () => {
 

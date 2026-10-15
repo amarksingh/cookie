@@ -1,5 +1,5 @@
-const Jar = require('../jar');
-const signature = require('cookie-signature');
+import Jar from '../jar';
+import signature from 'cookie-signature';
 
 describe('Cookie Jar Comprehensive Unit Tests', () => {
 
