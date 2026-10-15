@@ -1,3 +1,5 @@
+import type { ICookieJar, CookieOptions } from '@ostro/contracts/cookie/jar';
+
 var signature = require('cookie-signature');
 var cookie = require('cookie');
 const JarContract = require('@ostro/contracts/cookie/jar');
@@ -15,7 +17,7 @@ const { luxon, moments } = require('@ostro/support/function');
 /**
  * Cookie Jar managing creation, serialization, signing, and parsing of cookies.
  */
-class Jar extends JarContract {
+class Jar extends JarContract implements ICookieJar {
     [kApp]: any;
     [kConfig]: Record<string, any>;
 
