@@ -1,25 +1,39 @@
 var signature = require('cookie-signature');
 var cookie = require('cookie');
-const JarContract = require('@ostro/contracts/cookie/jar')
-const kCreateCookies = Symbol('createCookies')
-const kJSONCookies = Symbol('jSONCookies')
-const kJSONCookie = Symbol('jSONCookie')
-const kSignedCookies = Symbol('signedCookies')
-const kSignedCookie = Symbol('signedCookie')
-const kApp = Symbol('app')
-const kConfig = Symbol('config')
-const Cookie = require('./cookie')
-const { luxon, moments } = require('@ostro/support/function')
+const JarContract = require('@ostro/contracts/cookie/jar');
+
+const kCreateCookies = Symbol('createCookies');
+const kJSONCookies = Symbol('jSONCookies');
+const kJSONCookie = Symbol('jSONCookie');
+const kSignedCookies = Symbol('signedCookies');
+const kSignedCookie = Symbol('signedCookie');
+const kApp = Symbol('app');
+const kConfig = Symbol('config');
+const Cookie = require('./cookie');
+const { luxon, moments } = require('@ostro/support/function');
+
+/**
+ * Cookie Jar managing creation, serialization, signing, and parsing of cookies.
+ */
 class Jar extends JarContract {
-    constructor(app, config) {
-        super()
+    [kApp]: any;
+    [kConfig]: Record<string, any>;
+
+    /**
+     * Create a new Cookie Jar instance.
+     *
+     * @param app Application container instance.
+     * @param config Session/cookie configuration options.
+     */
+    constructor(app: any, config: Record<string, any> = {}) {
+        super();
         Object.defineProperty(this, kApp, {
             value: app,
             writable: false,
             configurable: false,
             enumerable: false
-        })
-        this[kConfig] = Object.create(null)
+        });
+        this[kConfig] = Object.create(null);
 
         this[kConfig]['path'] = config['path'] != undefined ? config['path'] : '/';
         this[kConfig]['domain'] = config['domain'] != undefined ? config['domain'] : null;
@@ -28,12 +42,22 @@ class Jar extends JarContract {
         this[kConfig]['maxAge'] = config['lifetime'] != undefined ? parseInt(config['lifetime'] * 60) : 0;
     }
 
-    [kCreateCookies](name, value, options = {}, isSecure = false) {
-        options = { ...this[kConfig],
+    /**
+     * Internal implementation to serialize and optionally sign a cookie.
+     *
+     * @param name Cookie name.
+     * @param value Cookie value.
+     * @param options Serialization options.
+     * @param isSecure Whether connection is secure.
+     * @returns Serialized cookie header string.
+     */
+    [kCreateCookies](name: string, value: any, options: Record<string, any> = {}, isSecure: boolean = false): string {
+        options = {
+            ...this[kConfig],
             ...options
-        }
+        };
         if (!isSecure) {
-            options.secure = false
+            options.secure = false;
         }
         if (options.signed && !this[kApp]['config']['app']['key']) {
             throw new Error('cookieParser("secret") required for signed cookies');
@@ -47,110 +71,176 @@ class Jar extends JarContract {
             val = 's:' + signature.sign(val, this[kApp]['config']['app']['key']);
         }
 
-        return cookie.serialize(name, String(val), options)
+        return cookie.serialize(name, String(val), options);
     }
 
-    createCookies(name, value, options = {}, isSecure = false) {
+    /**
+     * Create and serialize a cookie header string.
+     *
+     * @param name Cookie name.
+     * @param value Cookie value.
+     * @param options Serialization options.
+     * @param isSecure Whether HTTPS request.
+     * @returns Serialized Set-Cookie string.
+     */
+    createCookies(name: string, value: any, options: Record<string, any> = {}, isSecure: boolean = false): string {
         return this[kCreateCookies](name, value, options, isSecure);
     }
-    getJsonCookies(cookies, options = {}) {
-        return this[kJSONCookies](cookies, options)
-    }
-    getCookies(cookies = '', options = {}) {
-        return this.getJsonCookies(cookie.parse(cookies, options), options)
-    }
-    getSignedCookies(cookies, secrets, options = {}) {
-        return secrets ? this[kSignedCookies](cookies, secrets) : {}
-    }
-    parse(options) {
 
-        var secrets = this[kApp]['config']['app']['key']
-        return (req, res, next) => {
+    /**
+     * Parse JSON prefixed cookies from a dictionary.
+     *
+     * @param cookies Dictionary of cookies.
+     * @param options Parse options.
+     * @returns Dictionary with deserialized JSON cookies.
+     */
+    getJsonCookies(cookies: Record<string, any>, options: Record<string, any> = {}): Record<string, any> {
+        return this[kJSONCookies](cookies, options);
+    }
 
+    /**
+     * Parse a raw cookie header string into parsed cookies dictionary.
+     *
+     * @param cookies Raw Cookie header string.
+     * @param options Parse options.
+     * @returns Parsed cookie dictionary.
+     */
+    getCookies(cookies: string = '', options: Record<string, any> = {}): Record<string, any> {
+        return this.getJsonCookies(cookie.parse(cookies, options), options);
+    }
+
+    /**
+     * Extract and unsign signed cookies using application key.
+     *
+     * @param cookies Parsed raw cookies dictionary.
+     * @param secrets Key or array of secret keys.
+     * @param options Parse options.
+     * @returns Unsigned cookies map.
+     */
+    getSignedCookies(cookies: Record<string, any>, secrets: string | string[], options: Record<string, any> = {}): Record<string, any> {
+        return secrets ? this[kSignedCookies](cookies, secrets) : {};
+    }
+
+    /**
+     * Create an Express/Connect style cookie parser middleware function.
+     *
+     * @param options Parser options.
+     * @returns Connect middleware handler.
+     */
+    parse(options?: Record<string, any>): (req: any, res: any, next: (err?: any) => void) => void {
+        var secrets = this[kApp]['config']['app']['key'];
+        return (req: any, res: any, next: (err?: any) => void) => {
             if (req.cookies) {
-                return next()
+                return next();
             }
-            var cookies = req.headers.cookie
-            req.cookie = new Cookie(this, this.getCookies(cookies, options), this.getSignedCookies(cookies, secrets, options), req, res)
-            res.cookie = function() {
-                req.cookie.set(...arguments)
-                return this
-            }
-            next()
-        }
+            var cookies = req.headers.cookie;
+            req.cookie = new Cookie(this, this.getCookies(cookies, options), this.getSignedCookies(cookies, secrets, options), req, res);
+            res.cookie = function () {
+                req.cookie.set(...arguments);
+                return this;
+            };
+            next();
+        };
     }
 
-    [kJSONCookie](str) {
+    /**
+     * Parse a JSON cookie string prefixed with 'j:'.
+     *
+     * @param str Cookie string.
+     * @returns Deserialized value or undefined.
+     */
+    [kJSONCookie](str: any): any {
         if (typeof str !== 'string' || str.substr(0, 2) !== 'j:') {
-            return undefined
+            return undefined;
         }
 
         try {
-            return JSON.parse(str.slice(2))
+            return JSON.parse(str.slice(2));
         } catch (err) {
-            return undefined
+            return undefined;
         }
     }
 
-    [kJSONCookies](obj = Object.create(null)) {
-        var cookies = Object.keys(obj)
-        var key
-        var val
+    /**
+     * Mutate an object's keys, parsing any 'j:' values.
+     *
+     * @param obj Cookies map.
+     * @returns Mutated object.
+     */
+    [kJSONCookies](obj: Record<string, any> = Object.create(null)): Record<string, any> {
+        var cookies = Object.keys(obj);
+        var key: string;
+        var val: any;
 
         for (var i = 0; i < cookies.length; i++) {
-            key = cookies[i]
-            val = this[kJSONCookie](obj[key])
+            key = cookies[i];
+            val = this[kJSONCookie](obj[key]);
 
             if (val) {
-                obj[key] = val
+                obj[key] = val;
             }
         }
 
-        return obj
+        return obj;
     }
 
-    [kSignedCookie](str, secret) {
+    /**
+     * Parse a signed cookie string prefixed with 's:'.
+     *
+     * @param str Cookie string.
+     * @param secret Secret string or array of secrets.
+     * @returns Unsigned string, false if tampered, or original string.
+     */
+    [kSignedCookie](str: any, secret: string | string[]): any {
         if (typeof str !== 'string') {
-            return undefined
+            return undefined;
         }
 
         if (str.substr(0, 2) !== 's:') {
-            return str
+            return str;
         }
 
         var secrets = !secret || Array.isArray(secret) ?
-            (secret || []) : [secret]
+            (secret || []) : [secret];
 
         for (var i = 0; i < secrets.length; i++) {
-            var val = signature.unsign(str.slice(2), secrets[i])
+            var val = signature.unsign(str.slice(2), secrets[i]);
 
             if (val !== false) {
-                return val
+                return val;
             }
         }
 
-        return false
+        return false;
     }
 
-    [kSignedCookies](obj = {}, secret) {
-        var cookies = Object.keys(obj)
-        var dec
-        var key
-        var ret = Object.create(null)
-        var val
+    /**
+     * Extract all signed cookies from object, verifying signatures.
+     *
+     * @param obj Cookie dictionary.
+     * @param secret App key secret.
+     * @returns Verified signed cookies dictionary.
+     */
+    [kSignedCookies](obj: Record<string, any> = {}, secret: string | string[]): Record<string, any> {
+        var cookies = Object.keys(obj);
+        var dec: any;
+        var key: string;
+        var ret = Object.create(null);
+        var val: any;
 
         for (var i = 0; i < cookies.length; i++) {
-            key = cookies[i]
-            val = obj[key]
-            dec = this[kSignedCookie](val, secret)
+            key = cookies[i];
+            val = obj[key];
+            dec = this[kSignedCookie](val, secret);
 
             if (val !== dec) {
-                ret[key] = dec
-                delete obj[key]
+                ret[key] = dec;
+                delete obj[key];
             }
         }
 
-        return ret
+        return ret;
     }
 }
-module.exports = Jar
+
+module.exports = Jar;

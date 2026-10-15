@@ -1,13 +1,31 @@
-const ObjectGet = require('lodash.get')
-const kCookies = Symbol('cookies')
-const kSignedCookies = Symbol('signedCookies')
-const kRequest = Symbol('request')
-const kResponse = Symbol('response')
-const kJar = Symbol('jar')
+const ObjectGet = require('lodash.get');
 
+const kCookies = Symbol('cookies');
+const kSignedCookies = Symbol('signedCookies');
+const kRequest = Symbol('request');
+const kResponse = Symbol('response');
+const kJar = Symbol('jar');
+
+/**
+ * Request cookie accessor and mutator facade.
+ */
 class Cookie {
+    [kCookies]: Record<string, any>;
+    [kSignedCookies]: Record<string, any>;
+    [kRequest]: any;
+    [kResponse]: any;
+    [kJar]: any;
 
-    constructor(jar, cookies, signedCookies, request, response) {
+    /**
+     * Create a new Cookie interaction instance.
+     *
+     * @param jar Cookie jar instance.
+     * @param cookies Parsed unsigned cookies dictionary.
+     * @param signedCookies Parsed signed cookies dictionary.
+     * @param request Incoming HTTP request.
+     * @param response Outgoing HTTP response.
+     */
+    constructor(jar: any, cookies: Record<string, any>, signedCookies: Record<string, any>, request: any, response: any) {
         Object.defineProperties(this, {
             [kJar]: {
                 value: jar
@@ -21,31 +39,64 @@ class Cookie {
             [kResponse]: {
                 value: response
             }
-        })
+        });
         this[kCookies] = cookies;
     }
 
-    get(key, defaultValue = null) {
+    /**
+     * Retrieve a cookie by key with an optional fallback.
+     *
+     * @param key Cookie name.
+     * @param defaultValue Fallback value if cookie not present.
+     * @returns Resolved cookie value.
+     */
+    get<T = any>(key: string, defaultValue: T | null = null): T | null {
         return ObjectGet(this.all(), key, defaultValue);
     }
 
-    set(key, value, options = {}) {
+    /**
+     * Set a response cookie.
+     *
+     * @param key Cookie name.
+     * @param value Cookie value.
+     * @param options Cookie options (domain, path, maxAge, secure, etc.).
+     * @returns Fluent self instance.
+     */
+    set(key: string, value: any, options: Record<string, any> = {}): this {
         const isSecure = typeof this[kRequest]?.secure === 'function' ? this[kRequest].secure() : false;
         this[kResponse].append('Set-Cookie', this[kJar].createCookies(key, value, options, isSecure));
-        return this
+        return this;
     }
 
-    clear(key, options = {}) {
+    /**
+     * Clear a response cookie by setting an empty value.
+     *
+     * @param key Cookie name.
+     * @param options Cookie options.
+     * @returns Fluent self instance.
+     */
+    clear(key: string, options: Record<string, any> = {}): this {
         return this.set(key, '', options);
     }
 
-    forever(key, value) {
-        this.set(key, value, { maxAge: 1000 * 60 * 60 * 24 * 5 })
+    /**
+     * Set a cookie that lasts indefinitely (5 days standard).
+     *
+     * @param key Cookie name.
+     * @param value Cookie value.
+     */
+    forever(key: string, value: any): void {
+        this.set(key, value, { maxAge: 1000 * 60 * 60 * 24 * 5 });
     }
 
-    all() {
-        return { ...this[kCookies], ...this[kSignedCookies] }
+    /**
+     * Get all cookies merged (unsigned and signed).
+     *
+     * @returns Combined cookies dictionary.
+     */
+    all(): Record<string, any> {
+        return { ...this[kCookies], ...this[kSignedCookies] };
     }
-
 }
-module.exports = Cookie
+
+module.exports = Cookie;

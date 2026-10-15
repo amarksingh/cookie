@@ -1,16 +1,26 @@
 const ServiceProvider = require('@ostro/support/serviceProvider');
 const CookieJar = require('./jar');
-class filesystemServiceProvider extends ServiceProvider {
-    register() {
-        this.$app.singleton('cookie', function($app) {
+
+/**
+ * Service provider binding the cookie jar singleton into the application container.
+ */
+class CookieServiceProvider extends ServiceProvider {
+    /**
+     * Register cookie services into the container.
+     */
+    register(): void {
+        this.$app.singleton('cookie', function ($app: any) {
             let $config = $app.instance('config').get('session');
             return new CookieJar($app, $config);
-        })
+        });
     }
 
-    boot() {
+    /**
+     * Boot cookie services.
+     */
+    boot(): void {
 
     }
-
 }
-module.exports = filesystemServiceProvider
+
+module.exports = CookieServiceProvider;
