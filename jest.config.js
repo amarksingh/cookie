@@ -14,7 +14,7 @@ module.exports = {
         '^@ostro/console/(.*)$': '<rootDir>/../console/$1',
         '^@ostro/console$': '<rootDir>/../console/application.js',
         '^@ostro/cookie/(.*)$': '<rootDir>/$1',
-        '^@ostro/cookie$': '<rootDir>/jar.js'
+        '^@ostro/cookie$': '<rootDir>/jar'
     },
     collectCoverage: true,
     coverageDirectory: 'coverage',
