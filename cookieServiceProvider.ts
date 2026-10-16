@@ -25,4 +25,4 @@ class CookieServiceProvider extends ServiceProvider {
     }
 }
 
-export = CookieServiceProvider;
+export default CookieServiceProvider;

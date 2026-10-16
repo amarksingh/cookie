@@ -101,4 +101,4 @@ class Cookie {
     }
 }
 
-export = Cookie;
+export default Cookie;

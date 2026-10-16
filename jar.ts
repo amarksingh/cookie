@@ -244,4 +244,4 @@ class Jar extends JarContract implements ICookieJar {
     }
 }
 
-export = Jar;
+export default Jar;

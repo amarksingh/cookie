@@ -36,4 +36,4 @@ class CookieParser {
     }
 }
 
-export = CookieParser;
+export default CookieParser;
