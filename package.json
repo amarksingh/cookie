@@ -2,9 +2,11 @@
   "name": "@ostro/cookie",
   "version": "1.0.2",
   "description": "Cookie module for OstroJS",
-  "main": "jar.ts",
+  "main": "build/jar.js",
   "scripts": {
-    "test": "npx c8 npx jest"
+    "test": "npx c8 npx jest",
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@ostro/contracts": "^1.0.0",
@@ -30,5 +32,19 @@
   "bugs": {
     "url": "https://github.com/ostrojs/cookie/issues"
   },
-  "homepage": "https://github.com/ostrojs/cookie#readme"
+  "homepage": "https://github.com/ostrojs/cookie#readme",
+  "types": "build/jar.d.ts",
+  "files": [
+    "build"
+  ],
+  "exports": {
+    ".": {
+      "types": "./build/jar.d.ts",
+      "default": "./build/jar.js"
+    },
+    "./*": {
+      "types": "./build/*.d.ts",
+      "default": "./build/*.js"
+    }
+  }
 }
