@@ -1,6 +1,6 @@
 {
   "name": "@ostro/cookie",
-  "version": "1.0.2",
+  "version": "2.0.0-alpha.1",
   "description": "Cookie module for OstroJS",
   "main": "build/jar.js",
   "scripts": {
@@ -9,8 +9,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@ostro/contracts": "^1.0.0",
-    "@ostro/support": "^1.0.2",
+    "@ostro/contracts": "^2.0.0-alpha.1",
+    "@ostro/support": "^2.0.0-alpha.1",
     "cookie": "^0.4.0",
     "cookie-signature": "^1.1.0",
     "lodash.get": "^4.4.2",
