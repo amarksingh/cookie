@@ -11,8 +11,8 @@
   "dependencies": {
     "@ostro/contracts": "^2.0.0-alpha.1",
     "@ostro/support": "^2.0.0-alpha.1",
-    "cookie": "^0.4.0",
-    "cookie-signature": "^1.1.0",
+    "cookie": "^0.7.2",
+    "cookie-signature": "^1.2.1",
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2"
   },
