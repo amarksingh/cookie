@@ -1,5 +1,5 @@
-import CookieParser from '../middleware/cookieParser';
-import Jar from '../jar';
+import CookieParser from '../src/middleware/cookieParser';
+import Jar from '../src/jar';
 
 describe('CookieParser Middleware Unit Tests', () => {
 

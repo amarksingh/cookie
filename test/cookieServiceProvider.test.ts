@@ -1,5 +1,5 @@
-import CookieServiceProvider from '../cookieServiceProvider';
-import Jar from '../jar';
+import CookieServiceProvider from '../src/cookieServiceProvider';
+import Jar from '../src/jar';
 
 describe('CookieServiceProvider Unit Tests', () => {
 

@@ -1,4 +1,4 @@
-import Cookie from '../cookie';
+import Cookie from '../src/cookie';
 
 describe('Cookie Class Comprehensive Unit Tests', () => {
 

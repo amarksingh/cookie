@@ -1,4 +1,4 @@
-import Jar from '../jar';
+import Jar from '../src/jar';
 import signature from 'cookie-signature';
 
 describe('Cookie Jar Comprehensive Unit Tests', () => {
