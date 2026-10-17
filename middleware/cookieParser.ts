@@ -5,7 +5,7 @@ import Jar from '../jar';
  */
 class CookieParser {
     declare $app: any;
-    $cookie: any;
+    public $cookie: any;
     $registered?: boolean;
     $cookieParser?: (req: any, res: any, next: (err?: any) => void) => void;
 

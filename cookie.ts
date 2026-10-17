@@ -77,7 +77,7 @@ class Cookie {
      * @param options - Cookie options.
      * @returns Fluent self instance.
      */
-    clear(key: string, options: CookieOptions = {}): this {
+    public clear(key: string, options: CookieOptions = {}): this {
         return this.set(key, '', options);
     }
 
@@ -87,7 +87,7 @@ class Cookie {
      * @param key - Cookie name.
      * @param value - Cookie value.
      */
-    forever(key: string, value: any): void {
+    public forever(key: string, value: any): void {
         this.set(key, value, { maxAge: 1000 * 60 * 60 * 24 * 5 });
     }
 
@@ -96,7 +96,7 @@ class Cookie {
      *
      * @returns Combined cookies dictionary.
      */
-    all(): Record<string, any> {
+    public all(): Record<string, any> {
         return { ...this[kCookies], ...this[kSignedCookies] };
     }
 }

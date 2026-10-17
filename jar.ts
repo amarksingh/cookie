@@ -83,7 +83,7 @@ class Jar extends JarContract implements ICookieJar {
      * @param isSecure - Whether HTTPS request.
      * @returns Serialized Set-Cookie string.
      */
-    createCookies(name: string, value: any, options: CookieOptions = {}, isSecure: boolean = false): string {
+    public createCookies(name: string, value: any, options: CookieOptions = {}, isSecure: boolean = false): string {
         return this[kCreateCookies](name, value, options, isSecure);
     }
 
@@ -94,7 +94,7 @@ class Jar extends JarContract implements ICookieJar {
      * @param options - Parse options.
      * @returns Dictionary with deserialized JSON cookies.
      */
-    getJsonCookies(cookies: Record<string, any>, options: Record<string, any> = {}): Record<string, any> {
+    public getJsonCookies(cookies: Record<string, any>, options: Record<string, any> = {}): Record<string, any> {
         return this[kJSONCookies](cookies, options);
     }
 
@@ -105,7 +105,7 @@ class Jar extends JarContract implements ICookieJar {
      * @param options - Parse options.
      * @returns Parsed cookie dictionary.
      */
-    getCookies(cookies: string = '', options: Record<string, any> = {}): Record<string, any> {
+    public getCookies(cookies: string = '', options: Record<string, any> = {}): Record<string, any> {
         return this.getJsonCookies(cookie.parse(cookies, options), options);
     }
 
@@ -117,7 +117,7 @@ class Jar extends JarContract implements ICookieJar {
      * @param options - Parse options.
      * @returns Unsigned cookies map.
      */
-    getSignedCookies(cookies: Record<string, any>, secrets: string | string[], options: Record<string, any> = {}): Record<string, any> {
+    public getSignedCookies(cookies: Record<string, any>, secrets: string | string[], options: Record<string, any> = {}): Record<string, any> {
         return secrets ? this[kSignedCookies](cookies, secrets) : {};
     }
 
@@ -127,7 +127,7 @@ class Jar extends JarContract implements ICookieJar {
      * @param options - Parser options.
      * @returns Connect middleware handler.
      */
-    parse(options?: Record<string, any>): (req: any, res: any, next: (err?: any) => void) => void {
+    public parse(options?: Record<string, any>): (req: any, res: any, next: (err?: any) => void) => void {
         const secrets: string | string[] = this[kApp]['config']['app']['key'];
         return (req: any, res: any, next: (err?: any) => void): void => {
             if (req.cookies) {
